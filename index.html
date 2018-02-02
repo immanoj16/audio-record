@@ -3,22 +3,19 @@
   <head>
     <meta charset="UTF-8">
     <title>Audio</title>
+    <link rel="stylesheet" href="./css/style.css">
   </head>
   <body>
-    <audio autoplay controls></audio>
-    <script type="text/javascript">
-      function errorCallback(e) {
-        console.log('Error', e)
-      }
-
-      navigator.getUserMedia({video: false, audio: true}, (localMediaStream) => {
-        var audio = document.querySelector('audio')
-        audio.src = window.URL.createObjectURL(localMediaStream)
-        audio.onloadedmetadata = (e) => {
-          console.log("started");
-        };
-      }, errorCallback)
-
-    </script>
+    <div class="left">
+      <button id="start">start</button>
+      <h2>Preview</h2>
+      <audio id="preview" autoplay controls muted></audio>
+    </div>
+    <div class="right">
+      <button id="stop">stop</button>
+      <h2>Recorded</h2>
+      <audio id="record" controls></video>
+    </div>
+    <script type="text/javascript" src="./js/control.js"></script>
   </body>
 </html>
