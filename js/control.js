@@ -9,61 +9,55 @@ let startButton = document.getElementById("start");
 let stopButton = document.getElementById("stop");
 
 function millisToMinutesAndSeconds(millis) {
-  var minutes = Math.floor(millis / 60000);
-  var seconds = ((millis % 60000) / 1000).toFixed(0);
+  const minutes = Math.floor(millis / 60000);
+  const seconds = ((millis % 60000) / 1000).toFixed(0);
   return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
 }
 
 function controls() {
   navigator.mediaDevices.getUserMedia({audio: true})
     .then(stream => {
-      var options = {
+      const options = {
         recorderType: StereoAudioRecorder,
-        mimeType: 'audio/wav',
-        autoWriteToDisk: true
+        mimeType: 'audio/wav'
       };
-      var recordRTC = RecordRTC(stream, options);
+      const recordRTC = RecordRTC(stream, options);
+
       startButton.onclick = function () {
         recordRTC.startRecording();
         preview.srcObject = stream;
-      }
+      };
 
       stopButton.onclick = function () {
-        recordRTC.stopRecording(function(audioURL) {
+        recordRTC.stopRecording(function (audioURL) {
           record.src = audioURL;
 
-          var recordedBlob = recordRTC.getBlob();
-          var fileReader = new FileReader();
+          const recordedBlob = recordRTC.getBlob();
+
+          const fileReader = new FileReader();
           fileReader.onload = function () {
             fs.writeFileSync('test.wav', Buffer(new Uint8Array(fileReader.result)));
           };
           fileReader.readAsArrayBuffer(recordedBlob);
-        })
+        });
 
-        while (true) {
-          const path = __dirname + './test.wav';
-          const current = Date.now();
+        const current = Date.now();
 
-          if (fs.existsSync(path)) {
-            ffmpeg('./test.wav')
-              .toFormat('mp3')
-              .on('error', err => {
-                console.log('An error is occurred: ' + err.message);
-              })
-              .on('progress', progress => {
-                console.log('Processing: ' + progress.targetSize + ' KB converted');
-              })
-              .on('end', () => {
-                console.log('Finished!');
-                console.log(millisToMinutesAndSeconds(Date.now() - current));
-              })
-              .save('./test.mp3');
-
-            break;
-          } else {
-            console.log('file is not exist');
-          }
-        }
+        ffmpeg('./test.wav')
+          .audioBitrate(128)
+          .audioChannels(1)
+          .toFormat('mp3')
+          .on('error', err => {
+            console.log('An error is occurred: ' + err.message);
+          })
+          .on('progress', progress => {
+            console.log('Processing: ' + progress.targetSize + ' KB converted');
+          })
+          .on('end', () => {
+            console.log('Finished!');
+            console.log(millisToMinutesAndSeconds(Date.now() - current));
+          })
+          .save('./test.mp3');
       }
     })
 }
