@@ -6,7 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Recordings
-/saved_recordings/
+test.wav
+test.mp3
 
 # Runtime data
 pids
@@ -38,6 +39,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+release-builds/
 
 # Typescript v1 declaration files
 typings/
